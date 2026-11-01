@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
+import type { AxiosError } from "axios";
 import {
   onAddNewEvent,
   onDeleteEvent,
@@ -17,7 +18,7 @@ export const useCalendarStore = () => {
   const { events, activeEvent } = useSelector<RootState, RootState["calendar"]>(
     (state: RootState) => state.calendar,
   );
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
 
   const setActiveEvent = (calendarEvent: CalendarEvent) => {
     dispatch(onSetActiveEvent(calendarEvent));
@@ -39,7 +40,8 @@ export const useCalendarStore = () => {
       dispatch(onAddNewEvent({ ...calendarEvent, id: data.evento.id, user }));
     } catch (error) {
       console.log(error);
-      Swal.fire("Error al guardar", error.response.data?.msg || "", "error");
+      const { response } = error as AxiosError<{ msg?: string }>;
+      Swal.fire("Error al guardar", response?.data?.msg || "", "error");
     }
   };
 
@@ -52,7 +54,8 @@ export const useCalendarStore = () => {
       }
     } catch (error) {
       console.log(error);
-      Swal.fire("Error al eliminar", error.response.data?.msg || "", "error");
+      const { response } = error as AxiosError<{ msg?: string }>;
+      Swal.fire("Error al eliminar", response?.data?.msg || "", "error");
     }
   };
 

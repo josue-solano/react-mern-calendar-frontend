@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { CalendarEvent } from "../../calendar";
 // import { addHours } from "date-fns";
 
@@ -28,25 +28,33 @@ import type { CalendarEvent } from "../../calendar";
 //   },
 // };
 
+interface CalendarState {
+  isLoadingEvents: boolean;
+  events: CalendarEvent[];
+  activeEvent: CalendarEvent | null;
+}
+
+const initialState: CalendarState = {
+  isLoadingEvents: true,
+  events: [
+    /*tempEvent*/
+    /*tempEvent2*/
+  ],
+  activeEvent: null,
+};
+
 export const calendarSlice = createSlice({
   name: "calendar",
-  initialState: {
-    isLoadingEvents: true,
-    events: [
-      /*tempEvent*/
-      /*tempEvent2*/
-    ],
-    activeEvent: null,
-  },
+  initialState,
   reducers: {
-    onSetActiveEvent: (state, { payload }) => {
+    onSetActiveEvent: (state, { payload }: PayloadAction<CalendarEvent>) => {
       state.activeEvent = payload;
     },
-    onAddNewEvent: (state, { payload }) => {
+    onAddNewEvent: (state, { payload }: PayloadAction<CalendarEvent>) => {
       state.events.push(payload);
       state.activeEvent = null;
     },
-    onUpdateEvent: (state, { payload }) => {
+    onUpdateEvent: (state, { payload }: PayloadAction<CalendarEvent>) => {
       state.events = state.events.map((event) => {
         if (event.id === payload.id) {
           return payload;
@@ -63,7 +71,7 @@ export const calendarSlice = createSlice({
         state.activeEvent = null;
       }
     },
-    onLoadEvents: (state, { payload = [] }) => {
+    onLoadEvents: (state, { payload = [] }: PayloadAction<CalendarEvent[]>) => {
       state.isLoadingEvents = false;
       state.events = payload;
 

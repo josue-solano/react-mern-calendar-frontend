@@ -55,15 +55,12 @@ export const LoginPage = () => {
       return;
     }
 
-    const message = await startRegister({
+    // Los errores de registro se muestran a través de errorMessage
+    await startRegister({
       name: registerName,
       email: registerEmail,
       password: registerPassword,
     } as LoginForm);
-
-    if (message) {
-      Swal.fire("Error en registro", message, "error");
-    }
   };
 
   return (

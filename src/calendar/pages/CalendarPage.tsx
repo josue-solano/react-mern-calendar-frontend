@@ -29,9 +29,6 @@ export const CalendarPage = () => {
 
   const eventStyleGetter: EventPropGetter<CalendarEvent> = (
     event: CalendarEvent,
-    start: Date,
-    end: Date,
-    isSelected: boolean,
   ) => {
     const isMyEvent =
       user.uid === event?.user?._id || user.uid === event?.user?.uid;
@@ -50,7 +47,7 @@ export const CalendarPage = () => {
     };
   };
 
-  const onDoubleClick = (event: CalendarEvent) => {
+  const onDoubleClick = () => {
     openDateModal();
   };
 
