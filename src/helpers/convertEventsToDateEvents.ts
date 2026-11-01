@@ -1,6 +1,14 @@
 import { parseISO } from "date-fns";
+import type { CalendarEvent } from "../calendar";
 
-export const convertEventsToDateEvents = (events = []) => {
+type ApiCalendarEvent = Omit<CalendarEvent, "start" | "end"> & {
+  start: string;
+  end: string;
+};
+
+export const convertEventsToDateEvents = (
+  events: ApiCalendarEvent[] = [],
+): CalendarEvent[] => {
   return events.map((event) => {
     return {
       ...event,

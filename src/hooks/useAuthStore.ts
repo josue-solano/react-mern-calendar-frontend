@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+import type { AxiosError } from "axios";
 import type { LoginForm } from "../auth";
 import { calendarApi } from "../api";
 import {
@@ -7,12 +8,15 @@ import {
   onLogout,
   clearErrorMessage,
   onLogoutCalendar,
+  type RootState,
 } from "../store";
 
 //type AuthStatus = "checking" | "authenticated" | "not-authenticated";
 
 export const useAuthStore = () => {
-  const { status, user, errorMessage } = useSelector((state) => state.auth);
+  const { status, user, errorMessage } = useSelector(
+    (state: RootState) => state.auth,
+  );
   const dispatch = useDispatch();
 
   const startLogin = async ({ email, password }: LoginForm) => {
@@ -49,7 +53,8 @@ export const useAuthStore = () => {
       dispatch(onLogin({ name: data.name, uid: data.uid }));
     } catch (error) {
       console.log({ error });
-      dispatch(onLogout(error.response.data?.msg || ""));
+      const { response } = error as AxiosError<{ msg?: string }>;
+      dispatch(onLogout(response?.data?.msg || ""));
       setTimeout(() => {
         dispatch(clearErrorMessage());
       }, 10);

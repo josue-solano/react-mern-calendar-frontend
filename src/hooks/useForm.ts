@@ -1,17 +1,25 @@
 import { type ChangeEvent, useEffect, useMemo, useState } from "react";
 import type { LoginForm } from "../auth";
 
-export const useForm = (initialForm: LoginForm = {}, formValidations = {}) => {
+type FormValidations = Record<
+  string,
+  [(value: string | undefined) => boolean, string]
+>;
+
+export const useForm = (
+  initialForm: LoginForm = {},
+  formValidations: FormValidations = {},
+) => {
   const [formState, setFormState] = useState(initialForm);
-  const [formValidation, setFormValidation] = useState({});
+  const [formValidation, setFormValidation] = useState<Record<string, string | null>>({});
 
   const createValidators = () => {
-    const formCheckedValues = {};
+    const formCheckedValues: Record<string, string | null> = {};
 
     for (const formField of Object.keys(formValidations)) {
       const [fn, errorMessage] = formValidations[formField];
 
-      formCheckedValues[`${formField}Valid`] = fn(formState[formField])
+      formCheckedValues[`${formField}Valid`] = fn(formState[formField as keyof LoginForm])
         ? null
         : errorMessage;
     }
