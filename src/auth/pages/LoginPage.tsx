@@ -1,0 +1,154 @@
+import { useEffect, type SubmitEvent } from "react";
+
+import { useAuthStore, useForm } from "../../hooks";
+import type { LoginForm } from "../";
+
+import Swal from "sweetalert2";
+
+import "./LoginPage.css";
+
+const loginFormFields: LoginForm = {
+  email: "",
+  password: "",
+};
+
+const registerFormFields: LoginForm = {
+  name: "",
+  email: "",
+  password: "",
+  password2: "",
+};
+
+export const LoginPage = () => {
+  const { startLogin, startRegister, errorMessage } = useAuthStore();
+
+  const {
+    email: loginEmail,
+    password: loginPassword,
+    onInputChange: onLoginInputChange,
+  } = useForm(loginFormFields);
+
+  const {
+    name: registerName,
+    email: registerEmail,
+    password: registerPassword,
+    password2: registerPassword2,
+    onInputChange: onRegisterInputChange,
+  } = useForm(registerFormFields);
+
+  useEffect(() => {
+    if (errorMessage) {
+      Swal.fire("Error en la autenticación", errorMessage, "error");
+    }
+  }, [errorMessage]);
+
+  const loginSubmit = (event: SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    startLogin({ email: loginEmail, password: loginPassword } as LoginForm);
+  };
+
+  const registerSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    if (registerPassword !== registerPassword2) {
+      Swal.fire("Error en registro", "Contraseñas no son iguales", "error");
+      return;
+    }
+
+    const message = await startRegister({
+      name: registerName,
+      email: registerEmail,
+      password: registerPassword,
+    } as LoginForm);
+
+    if (message) {
+      Swal.fire("Error en registro", message, "error");
+    }
+  };
+
+  return (
+    <div className="container login-container">
+      <div className="row">
+        <div className="col-md-6 login-form-1">
+          <h3>Ingreso</h3>
+          <form onSubmit={loginSubmit}>
+            <div className="form-group mb-2">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Correo"
+                name="email"
+                value={loginEmail}
+                onChange={onLoginInputChange}
+              />
+            </div>
+            <div className="form-group mb-2">
+              <input
+                type="password"
+                className="form-control"
+                placeholder="Contraseña"
+                name="password"
+                value={loginPassword}
+                onChange={onLoginInputChange}
+              />
+            </div>
+            <div className="form-group mb-2">
+              <input type="submit" className="btnSubmit" value="Login" />
+            </div>
+          </form>
+        </div>
+
+        <div className="col-md-6 login-form-2">
+          <h3>Registro</h3>
+          <form onSubmit={registerSubmit}>
+            <div className="form-group mb-2">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Nombre"
+                name="name"
+                value={registerName}
+                onChange={onRegisterInputChange}
+              />
+            </div>
+            <div className="form-group mb-2">
+              <input
+                type="email"
+                className="form-control"
+                placeholder="Correo"
+                name="email"
+                value={registerEmail}
+                onChange={onRegisterInputChange}
+              />
+            </div>
+            <div className="form-group mb-2">
+              <input
+                type="password"
+                className="form-control"
+                placeholder="Contraseña"
+                name="password"
+                value={registerPassword}
+                onChange={(e) => onRegisterInputChange(e)}
+              />
+            </div>
+
+            <div className="form-group mb-2">
+              <input
+                type="password"
+                className="form-control"
+                placeholder="Repita la contraseña"
+                name="password2"
+                value={registerPassword2}
+                onChange={onRegisterInputChange}
+              />
+            </div>
+
+            <div className="form-group mb-2">
+              <input type="submit" className="btnSubmit" value="Crear cuenta" />
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
